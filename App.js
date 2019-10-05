@@ -1,62 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import * as expo from 'expo';
+import React from 'react';
+import { Linking as expoLinking } from 'expo';
 import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
-import {
-  Text,
-  View,
-  ActivityIndicator,
-  StatusBar,
-  Linking
-} from 'react-native';
+import { Text, View } from 'react-native';
 
-const AuthLoadingScreen = ({ navigation }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+import SplashLoadingScreen from './screens/SplashLoadingScreen';
 
-  // 앱이 실행중일 때 deep link 체크
-  const _hadnlerEvent = url => {
-    console.log({handlerEvent: url})
-    if (url !== "exp://192.168.0.12:19000") {
-      setIsDeep(true)
-    } else {
-      setIsDeep(false)
-    }
-  }
 
-  useEffect(() => {
-    let isDeep = false;
-
-    expo.Linking.addEventListener('url', _hadnlerEvent);
-
-    // 앱이 실행중이지 않을 때 실행 후 deep link 체크
-    const checkDeep = async () => {
-      await Linking.getInitialURL().then(url => {
-        if (url !== "exp://192.168.0.12:19000") {
-          isDeep = true
-        } else {
-          isDeep = false
-        }
-      });
-    }
-
-    checkDeep()
-
-    // deep link 유무에 따라 로그인 체크
-    if (!isDeep) {
-      navigation.navigate(isLoggedIn ? 'Main' : 'Auth');
-    }
-
-    return () => expo.Linking.removeEventListener('url', _hadnlerEvent);
-  }, []);
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size='large' color='#000' />
-      <StatusBar barStyle='default' />
-    </View>
-  );
-};
-
+// screens
 const SignUp = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>SignUp</Text>
@@ -81,6 +33,7 @@ const Detail = () => (
   </View>
 );
 
+// Navigator
 const AuthStackNavigator = createStackNavigator({
   SignUp: {
     screen: SignUp,
@@ -103,8 +56,9 @@ const MainTabNavigator = createBottomTabNavigator({
   }
 });
 
-const SwitchNavigation = createSwitchNavigator({
-  AuthLoadingScreen,
+// SwitchNavigator
+const AppSwitchNavigation = createSwitchNavigator({
+  SplashLoadingScreen,
   Auth: {
     screen: AuthStackNavigator,
     path: 'login'
@@ -115,10 +69,10 @@ const SwitchNavigation = createSwitchNavigator({
   }
 });
 
-const AppContainer = createAppContainer(SwitchNavigation);
+const AppContainer = createAppContainer(AppSwitchNavigation);
 
 export default () => {
-  const prefix = expo.Linking.makeUrl('/');
+  const prefix = expoLinking.makeUrl('/');
 
   return <AppContainer uriPrefix={prefix} />;
 };
