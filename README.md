@@ -1,2 +1,3 @@
 # RN-deep-link
-deep link test with React Native + React Navigation + Expo
+
+React Native + React Navigation + Expo를 이용한 deep link 테스트
